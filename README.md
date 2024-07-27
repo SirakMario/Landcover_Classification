@@ -5,7 +5,7 @@
 Land cover refers to the earth’s surface features, including elements such as water, soil, vegetation, and their diverse sub-categories. Accurate and up-to-date land cover classification is important for effective environmental monitoring, urban planning, and sustainable resource management. In Poland, rapid urbanization, agricultural activities, and climate change have increased the need for precise land cover information. Traditional methods of land cover classification, which depends on manual interpretation of satellite images and field surveys, are time consuming, labor-intensive, and sensitive to human errors. The introduction of U-net architecture, deep learning (DL), technology presents a transformative opportunity to enhance land cover classification processes. Using high-resolution aerial imagery and DL algorithms, it is possible to automate the classification process, significantly improve accuracy, efficiency, and scalability .
 
 # Study area
-![Study area](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Study_area.png)
+![Study area](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Study_area.PNG)
 # Dataset
 The dataset (Fig. 2) is, from LandCover .ai (Land Cover from Aerial Imagery), designed for the automatic mapping of land covers such as buildings, water, roads, and woodland from aerial images of Poland
 • Raster Images and Masks are 3-channel and 1-channel GeoTiffs respectively
