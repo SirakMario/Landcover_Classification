@@ -5,9 +5,9 @@
 Land cover refers to the earth’s surface features, including elements such as water, soil, vegetation, and their diverse sub-categories. Accurate and up-to-date land cover classification is important for effective environmental monitoring, urban planning, and sustainable resource management. In Poland, rapid urbanization, agricultural activities, and climate change have increased the need for precise land cover information. Traditional methods of land cover classification, which depends on manual interpretation of satellite images and field surveys, are time consuming, labor-intensive, and sensitive to human errors. The introduction of U-net architecture, deep learning (DL), technology presents a transformative opportunity to enhance land cover classification processes. Using high-resolution aerial imagery and DL algorithms, it is possible to automate the classification process, significantly improve accuracy, efficiency, and scalability .
 
 # Study area
-![Study area](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/study_area.png)
+![Study area](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Study_area.png)
 # Dataset
-The dataset (Fig. 2) is, from LandCover .ai [1] (Land Cover from Aerial Imagery), designed for the automatic mapping of land covers such as buildings, water, roads, and woodland from aerial images of Poland
+The dataset (Fig. 2) is, from LandCover .ai (Land Cover from Aerial Imagery), designed for the automatic mapping of land covers such as buildings, water, roads, and woodland from aerial images of Poland
 • Raster Images and Masks are 3-channel and 1-channel GeoTiffs respectively
 • 33 orthophotos with 25 cm per pixel resolution (~9000x9500 px)
 • 8 orthophotos with 50 cm per pixel resolution (~4200x4700 px)
@@ -28,5 +28,9 @@ Land cover classification is important in sustainable urban and regional
 planning.
 • The model shows robust performance, outperforming traditional
 classification methods.
+# Reference
+1. Boguszewski, A., Batorski, D., Ziemba-Jankowska, N., Dziedzic, T ., & Zambrzycka, A. (2021). LandCover .ai: Dataset for automatic mapping of buildings, woodlands, water and roads from aerial imagery . In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+2. Recognition (CVPR) Workshops (pp. 1102-1110).
+3. Růžička, V ., D'Aronco, S., Wegner, J. D., & Schindler, K. (2020). Deep active learning in remote sensing for data efficient change detection. arXiv preprint arXiv:2008.11201.
 
 
