@@ -21,8 +21,8 @@ The dataset (Fig. 2) is, from LandCover .ai (Land Cover from Aerial Imagery), de
 ![Methodology](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Methodology.PNG)
 # Results
 Fig4.  presents  the  land  cover  classification  results  obtained  from  the  U-net  (ResNet32),  a convolutional  neural  network  architecture,  applied  to  aerial  images  of  Poland.  The  input  masks consist of five classes: building, woodland, water, road, and unlabeled. This study employed the Segmentation  Models  library  in  Python,  which  is  based  on  the  Keras  (Tensorflow)  framework. Image  segmentation  was  performed  in  two  approaches:  using  only  the  original  images  and using  augmented  images.  The  augmentations  included  horizontal  and  vertical  flips,  with  a method  to  handle  pixels  generated  outside  the  image  boundaries  during  transformation.  The performance  difference  between  these  two  approaches  is  significant.  Evaluation  metrics, Intersection  over  Union  (IOU),  demonstrate  that  classification  with  augmented  data outperforms classification without augmentation, as shown in Table 1.
-![Result table](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Table.png)
-![result](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/results.png)
+![Result table](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Table.PNG)
+![result](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/results.PNG)
 # Conclusion
 Land cover classification is important in sustainable urban and regional
 planning.
