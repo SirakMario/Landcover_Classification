@@ -13,7 +13,7 @@ The dataset (Fig. 2) is, from LandCover .ai (Land Cover from Aerial Imagery), de
 • 8 orthophotos with 50 cm per pixel resolution (~4200x4700 px)
 • Total area: 216.27 km2
 • Class: Unlabeled (0), Building (1), woodland (2), water (3), road (4)
-![Dataset used](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/datasets.png)
+![Dataset used](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/datasets.PNG)
 # Objective
 1. Develop a U-Net model that accurately classifies land cover
 2. To  evaluate  and  compare  the  performance  of  U-Net  model  with  and without data augmentation. The aim is to show the improved effectiveness of  augmented  trained  data  in  generating  reliable  land  cover  data  for environmental monitoring and urban planning purposes in Poland.
