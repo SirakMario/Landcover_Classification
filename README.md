@@ -8,11 +8,19 @@ Land cover refers to the earth’s surface features, including elements such as 
 ![Study area](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/Study_area.PNG)
 # Dataset
 The dataset (Fig. 2) is, from LandCover .ai (Land Cover from Aerial Imagery), designed for the automatic mapping of land covers such as buildings, water, roads, and woodland from aerial images of Poland
-• Raster Images and Masks are 3-channel and 1-channel GeoTiffs respectively
-• 33 orthophotos with 25 cm per pixel resolution (~9000x9500 px)
-• 8 orthophotos with 50 cm per pixel resolution (~4200x4700 px)
-• Total area: 216.27 km2
-• Class: Unlabeled (0), Building (1), woodland (2), water (3), road (4)
+- **Raster Images and Masks**: 
+  - 3-channel and 1-channel GeoTIFFs respectively
+- **Resolution and Coverage**:
+  - 33 orthophotos with 25 cm per pixel resolution (~9000x9500 px)
+  - 8 orthophotos with 50 cm per pixel resolution (~4200x4700 px)
+- **Total Area**:
+  - 216.27 km²
+- **Classes**:
+  - Unlabeled (0)
+  - Building (1)
+  - Woodland (2)
+  - Water (3)
+  - Road (4)
 ![Dataset used](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/datasets.PNG)
 # Objective
 1. Develop a U-Net model that accurately classifies land cover
