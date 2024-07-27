@@ -21,6 +21,7 @@ The dataset (Fig. 2) is, from LandCover .ai (Land Cover from Aerial Imagery), de
   - Woodland (2)
   - Water (3)
   - Road (4)
+    
 ![Dataset used](https://github.com/SirakMario/Landcover_Classification/blob/main/assets/datasets.PNG)
 # Objective
 1. Develop a U-Net model that accurately classifies land cover
