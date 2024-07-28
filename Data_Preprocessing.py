@@ -1,7 +1,7 @@
 """
 
 The landcover dataset from here: https://landcover.ai/
-
+Version 1 dataset
 
 Tasks 
 1. Read large images and corresponding masks, divide them into smaller patches.
@@ -46,9 +46,9 @@ root_directory = 'data/'
 
 patch_size = 256
 
-#Read images from repsective 'images' subdirectory
-#As all images are of different size we have 2 options, either resize or crop
-#But, some images are too large and some small. Resizing will change the size of real objects.
+#Read images from 'images' subdirectory
+#All images are of different size we have 2 options, resize or crop
+#Some images are too large and some small. Resizing will change the size of real objects.
 #Therefore, we will crop them to a nearest size divisible by 256 and then 
 #divide all images into patches of 256x256x3. 
 img_dir=root_directory+"images/"
@@ -104,7 +104,7 @@ for path, subdirs, files in os.walk(mask_dir):
                                mask_name+"patch_"+str(i)+str(j)+".tif", single_patch_mask)
 
 
-
+# Display the patched images with its corresponding masks
 train_img_dir = "data/256_patches/images/"
 train_mask_dir = "data/256_patches/masks/"
 
@@ -166,26 +166,25 @@ import splitfolders
 
 input_folder = 'data/256_patches/images_with_useful_info/'
 output_folder = 'data/data_for_training_testing_val/'
-splitfolders.ratio(input_folder, output=output_folder, seed=42, ratio=(.80, 0.10,0.10), group_prefix=None)
+splitfolders.ratio(input_folder, output=output_folder, seed=42, ratio=(0.80, 0.10,0.10), group_prefix=None)
 ########################################
-
 #Manually move folders around to bring them to the following structure.
 """
 Your current directory structure:
 Data/
-    train/
+    data_for_training_testing_val/train/
         images/
             img1, img2, ...
         masks/
             msk1, msk2, ....
             
-    test/
+    data_for_training_testing_val/test/
         images/
             img1, img2, ...
         masks/
             msk1, msk2, ....
             
-    val/
+    data_for_training_testing_val/val/
         images/
             img1, img2, ...
         masks/
@@ -195,27 +194,27 @@ Copy the folders around to the following structure...
 
 
 Data/
-    train_images/
+    data_for_keras_aug/train_images/
                 train/
                     img1, img2, img3, ......
     
-    train_masks/
+    data_for_keras_aug/train_masks/
                 train/
                     msk1, msk, msk3, ......
     
-    test_images/
+    data_for_keras_aug/test_images/
                 test/
                     img1, img2, img3, ......                
 
-    test_masks/
+    data_for_keras_aug/test_masks/
                 test/
                     msk1, msk, msk3, ......
     
-    val_images/
+    data_for_keras_aug/val_images/
                 val/
                     img1, img2, img3, ......                
 
-    val_masks/
+    data_for_keras_aug/val_masks/
                 val/
                     msk1, msk, msk3, ......
       
