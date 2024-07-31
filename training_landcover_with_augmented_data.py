@@ -8,6 +8,18 @@ labels:
     2: Woodlands
     3: Water
     4: Road
+    
+*N.B
+    To install the segmentation models library: pip install -U segmentation-models
+    
+    If you get an error about generic_utils...
+
+    change 
+        keras.utils.generic_utils.get_custom_objects().update(custom_objects) 
+    to 
+        keras.utils.get_custom_objects().update(custom_objects) 
+    in 
+        .../lib/python3.7/site-packages/efficientnet/__init__.py 
 
 """
 

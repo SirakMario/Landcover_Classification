@@ -8,190 +8,140 @@ labels:
     2: Woodlands
     3: Water
     4: Road
+*N.B
+    To install the segmentation models library: pip install -U segmentation-models
+    
+    If you get an error about generic_utils...
 
+    change 
+        keras.utils.generic_utils.get_custom_objects().update(custom_objects) 
+    to 
+        keras.utils.get_custom_objects().update(custom_objects) 
+    in 
+        .../lib/python3.7/site-packages/efficientnet/__init__.py 
 """
-
 import os
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import segmentation_models as sm
-from tensorflow.keras.metrics import MeanIoU
-import random
-
-################################################################
-#Understanding the data by looking at a few random images and masks 
-
-train_img_dir = "data/data_for_training_testing_val/train/images/"
-train_mask_dir = "data/data_for_training_testing_val/train/masks/"
-
-img_list = os.listdir(train_img_dir)
-msk_list = os.listdir(train_mask_dir)
-
-num_images = len(os.listdir(train_img_dir))
-
-
-img_num = random.randint(0, num_images-1)
-
-img_for_plot = cv2.imread(train_img_dir+img_list[img_num], 1)
-img_for_plot = cv2.cvtColor(img_for_plot, cv2.COLOR_BGR2RGB)
-
-mask_for_plot =cv2.imread(train_mask_dir+msk_list[img_num], 0)
-
-plt.figure(figsize=(12, 8))
-plt.subplot(121)
-plt.imshow(img_for_plot)
-plt.title('Image')
-plt.subplot(122)
-plt.imshow(mask_for_plot, cmap='gray')
-plt.title('Mask')
-plt.show()
-
-################################################################
-# Define Generator for images and masks so we can read them directly from the drive. 
-
-seed=24
-batch_size= 8
-n_classes=5
-
 from sklearn.preprocessing import MinMaxScaler
-scaler = MinMaxScaler()
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 
+# Define constants
+BATCH_SIZE = 8
+N_CLASSES = 5
+IMG_HEIGHT = 256  # Adjust as needed
+IMG_WIDTH = 256   # Adjust as needed
+IMG_CHANNELS = 3
 BACKBONE = 'resnet34'
+
+# Set up paths
+BASE_DIR = "data/data_for_training_testing_val/"
+TRAIN_IMG_DIR = os.path.join(BASE_DIR, "train", "images")
+TRAIN_MASK_DIR = os.path.join(BASE_DIR, "train", "masks")
+VAL_IMG_DIR = os.path.join(BASE_DIR, "val", "images")
+VAL_MASK_DIR = os.path.join(BASE_DIR, "val", "masks")
+
+# Initialize preprocessing
+scaler = MinMaxScaler()
 preprocess_input = sm.get_preprocessing(BACKBONE)
 
-#Define a function to perform additional preprocessing after datagen.
-def preprocess_data(img, mask, num_class):
-    #Scale images
-    img = scaler.fit_transform(img.reshape(-1, img.shape[-1])).reshape(img.shape)
-    img = preprocess_input(img)  #Preprocess based on the pretrained backbone resnet34
-    #Convert mask to one-hot
-    mask = to_categorical(mask, num_class)
-      
-    return (img,mask)
+def load_data(img_dir, mask_dir):
+    images = []
+    masks = []
+    for img_name in os.listdir(img_dir):
+        img_path = os.path.join(img_dir, img_name)
+        mask_path = os.path.join(mask_dir, img_name)
+        
+        # Load and preprocess image
+        img = load_img(img_path, target_size=(IMG_HEIGHT, IMG_WIDTH))
+        img = img_to_array(img)
+        img = scaler.fit_transform(img.reshape(-1, IMG_CHANNELS)).reshape(img.shape)
+        img = preprocess_input(img)
+        
+        # Load and preprocess mask
+        mask = load_img(mask_path, target_size=(IMG_HEIGHT, IMG_WIDTH), color_mode="grayscale")
+        mask = img_to_array(mask).squeeze().astype(int)
+        mask = to_categorical(mask, N_CLASSES)
+        
+        images.append(img)
+        masks.append(mask)
+    
+    return np.array(images), np.array(masks)
 
+# Load training and validation data
+print("Loading training data")
+X_train, y_train = load_data(TRAIN_IMG_DIR, TRAIN_MASK_DIR)
+print("Loading validation data")
+X_val, y_val = load_data(VAL_IMG_DIR, VAL_MASK_DIR)
 
-val_img_dir = "data/data_for_training_testing_val/val/images"
-val_mask_dir = "data/data_for_training_testing_val/val/masks"
-
-
-#Check the generator is working and the images and masks are indeed lined up. 
-x, y = next(train_img_dir)
-
-for i in range(0,3):
-    image = x[i]
-    mask = np.argmax(y[i], axis=2)
-    plt.subplot(1,2,1)
-    plt.imshow(image)
-    plt.subplot(1,2,2)
-    plt.imshow(mask, cmap='gray')
-    plt.show()
-
-x_val, y_val = next(val_img_dir)
-
-for i in range(0,3):
-    image = x_val[i]
-    mask = np.argmax(y_val[i], axis=2)
-    plt.subplot(1,2,1)
-    plt.imshow(image)
-    plt.subplot(1,2,2)
-    plt.imshow(mask, cmap='gray')
-    plt.show()
-
-###########################################################################
-#Define the model metrcis and load model. 
-
-num_train_imgs = len(os.listdir('data/data_for_keras_aug/train_images/train/'))
-num_val_images = len(os.listdir('data/data_for_keras_aug/val_images/val/'))
-steps_per_epoch = num_train_imgs//batch_size
-val_steps_per_epoch = num_val_images//batch_size
-
-
-IMG_HEIGHT = x.shape[1]
-IMG_WIDTH  = x.shape[2]
-IMG_CHANNELS = x.shape[3]
-
-n_classes=5
-
-#############################################################################
-#Define the model
+# Define model
 model = sm.Unet(BACKBONE, encoder_weights='imagenet', 
                 input_shape=(IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS),
-                classes=n_classes, activation='softmax')
+                classes=N_CLASSES, activation='softmax')
 model.compile('Adam', loss=sm.losses.categorical_focal_jaccard_loss, metrics=[sm.metrics.iou_score])
 
 print(model.summary())
-print(model.input_shape)
 
-#Train the model. 
-history=model.fit(train_img_dir,
-          steps_per_epoch=steps_per_epoch,
-          epochs=25,
-          verbose=1,
-          validation_data=val_img_gen,
-          validation_steps=val_steps_per_epoch)
+# Train the model
+history = model.fit(
+    X_train, y_train,
+    batch_size=BATCH_SIZE,
+    epochs=25,
+    verbose=1,
+    validation_data=(X_val, y_val)
+)
 
-model.save('landcover_with_agumented_uNet.hdf5')
+# Save the model
+model.save('landcover_without_augmentation_uNet.hdf5')
 
-##################################################################
-#plot the training and validation IoU and loss at each epoch
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-epochs = range(1, len(loss) + 1)
-plt.plot(epochs, loss, 'y', label='Training loss')
-plt.plot(epochs, val_loss, 'r', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
+# Plot training history
+plt.figure(figsize=(12, 4))
+plt.subplot(121)
+plt.plot(history.history['iou_score'])
+plt.plot(history.history['val_iou_score'])
+plt.title('Model IOU')
+plt.ylabel('IOU')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+
+plt.subplot(122)
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
 plt.ylabel('Loss')
-plt.legend()
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
 plt.show()
 
-acc = history.history['iou_score']
-val_acc = history.history['val_iou_score']
+# Function to plot sample predictions
+def plot_sample_predictions(X, y_true, y_pred, n_samples=3):
+    for i in range(n_samples):
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+        
+        # Original image
+        ax1.imshow(X[i])
+        ax1.set_title('Original Image')
+        ax1.axis('off')
+        
+        # True mask
+        ax2.imshow(np.argmax(y_true[i], axis=-1), cmap='jet')
+        ax2.set_title('True Mask')
+        ax2.axis('off')
+        
+        # Predicted mask
+        ax3.imshow(np.argmax(y_pred[i], axis=-1), cmap='jet')
+        ax3.set_title('Predicted Mask')
+        ax3.axis('off')
+        
+        plt.tight_layout()
+        plt.show()
 
-plt.plot(epochs, acc, 'y', label='Training IoU')
-plt.plot(epochs, val_acc, 'r', label='Validation IoU')
-plt.title('Training and validation IoU')
-plt.xlabel('Epochs')
-plt.ylabel('IoU')
-plt.legend()
-plt.show()
+# Make predictions on validation set
+y_pred = model.predict(X_val)
 
-#####################################################
-from keras.models import load_model
-
-model = load_model("landcover_agumented_u-net.hdf5", compile=False)
-
-
-#Test generator using validation data.
-
-test_image_batch, test_mask_batch = next(val_img_gen)
-
-#Convert categorical to integer for visualization and IoU calculation
-test_mask_batch_argmax = np.argmax(test_mask_batch, axis=3) 
-test_pred_batch = model.predict(test_image_batch)
-test_pred_batch_argmax = np.argmax(test_pred_batch, axis=3)
-
-n_classes = 5
-IOU_keras = MeanIoU(num_classes=n_classes)  
-IOU_keras.update_state(test_pred_batch_argmax, test_mask_batch_argmax)
-print("Mean IoU =", IOU_keras.result().numpy())
-
-#######################################################
-#View a some images, masks and corresponding predictions. 
-img_num = random.randint(0, test_image_batch.shape[0]-1)
-
-plt.figure(figsize=(12, 8))
-plt.subplot(231)
-plt.title('Testing Image')
-plt.imshow(test_image_batch[img_num])
-plt.subplot(232)
-plt.title('Testing Label')
-plt.imshow(test_mask_batch_argmax[img_num])
-plt.subplot(233)
-plt.title('Prediction on test image')
-plt.imshow(test_pred_batch_argmax[img_num])
-plt.show()
-
+# Plot sample predictions
+plot_sample_predictions(X_val,y_val,y_pred)
